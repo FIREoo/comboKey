@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29306.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CS_keyboardHook", "CS_keyboardHook\CS_keyboardHook.csproj", "{02F64B9E-60F2-4C77-94BF-F88DE194A2CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf_comboKeyboard", "Wpf_comboKeyboard\Wpf_comboKeyboard.csproj", "{BF2007C5-3018-492E-A671-F9BBF49F9F71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02F64B9E-60F2-4C77-94BF-F88DE194A2CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02F64B9E-60F2-4C77-94BF-F88DE194A2CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02F64B9E-60F2-4C77-94BF-F88DE194A2CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02F64B9E-60F2-4C77-94BF-F88DE194A2CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF2007C5-3018-492E-A671-F9BBF49F9F71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF2007C5-3018-492E-A671-F9BBF49F9F71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF2007C5-3018-492E-A671-F9BBF49F9F71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF2007C5-3018-492E-A671-F9BBF49F9F71}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {25D8564F-53DD-43DF-9A80-4E57E215669D}
+	EndGlobalSection
+EndGlobal
