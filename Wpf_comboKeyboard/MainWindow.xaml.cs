@@ -17,7 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Utilities;
-
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Wpf_comboKeyboard
 {
@@ -27,9 +28,18 @@ namespace Wpf_comboKeyboard
     public partial class MainWindow : Window
     {
         System.Windows.Forms.NotifyIcon nIcon = new System.Windows.Forms.NotifyIcon();
-        globalKeyboardHook gkh = new globalKeyboardHook();
+        globalKeyboardHook gkh = new globalKeyboardHook();//the only gkh 請不要建立兩個(我不知道會怎樣)
+
+        /// <summary>替換按鍵List view data</summary>
+        ObservableCollection<ListViewData> ListViewData_SwitchKey = new ObservableCollection<ListViewData>();
+        /// <summary>替換按鍵表 [press key ,switch to]</summary>
+        Dictionary<Key, Key> SwitchKeyDic = new Dictionary<Key, Key>();
+        /// <summary>The combo key</summary>
         Key ComboKey = Key.CapsLock;
-        bool capsPress = false;
+        /// <summary>The combo key press = True</summary>
+        bool ComboKeyPress = false;
+        /// <summary>Wait to set a combo key press</summary>
+        bool waitAComboKey = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -78,14 +88,24 @@ namespace Wpf_comboKeyboard
 
             select_002.MouseDown += keyboardImageClick_MouseDown;
             gkh.KeyEvent += new globalKeyboardHook.KeyPressHandler(gkh_KeyEvent);
-            
+
+            //switch key list view
+            LV_switchKey.ItemsSource = ListViewData_SwitchKey;
         }
+
+        //combo key added in window loaded
         string infoFile = "";
+        string keyPath = "KeyFile";
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //creat info file
             string MyDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            infoFile = MyDocumentsPath + "\\Combokey.txt";
+            keyPath = MyDocumentsPath+"\\KeyFile";
+            //check folder         
+            if (Directory.Exists(keyPath) == false)
+                Directory.CreateDirectory(keyPath);
+
+            //creat info file
+            infoFile = keyPath + "\\Combokey.txt";
             if (File.Exists(infoFile))
             {
                 ReadTxtInfo();
@@ -96,6 +116,7 @@ namespace Wpf_comboKeyboard
                 ReadTxtInfo();
             }
             gkh.HookedKeys.Add(ComboKey);
+
             //gkh.HookedKeys.Add(Keys.RControlKey);
             //gkh.HookedKeys.Add(Keys.CapsLock);
             //gkh.HookedKeys.Add(Keys.I);//↑
@@ -114,13 +135,18 @@ namespace Wpf_comboKeyboard
 
             //gkh.HookedKeys.Add(Keys.Tab);//capsLock
 
-            //gkh.KeyDown += new KeyEventHandler(gkh_KeyDown);
-            //gkh.KeyUp += new KeyEventHandler(gkh_KeyUp);
+            gkh.KeyDown += new globalKeyboardHook.KeyPressHandler(gkh_KeyDown);
+            gkh.KeyUp += new globalKeyboardHook.KeyPressHandler(gkh_KeyUp);
         }
         void ReadTxtInfo()
         {
             string[] allString = System.IO.File.ReadAllLines(infoFile);
-            string str = allString[0].Substring(9, allString[0].Length - 10);
+            //取得combo key
+            string str = allString[0].Substring(9, allString[0].Length - 10);//comboKey(CapsLock)
+            for(int L = 1;L<allString.Count();L++)
+            {
+                var line = allString[L];
+            }
             ComboKey = Name2Key[str];
         }
         void WriteTxtInfo()
@@ -158,8 +184,10 @@ namespace Wpf_comboKeyboard
         {
             tb_comboKey.Text = "---";
             gkh.HookedKeys.Remove(ComboKey);
-            waitComboKey = true;
+            waitAComboKey = true;
         }
+
+        /// <summary>啟用combo功能</summary>
         private void Cb_hook_Click(object sender, RoutedEventArgs e)
         {
             if (cb_hook.IsChecked == true)
@@ -173,6 +201,8 @@ namespace Wpf_comboKeyboard
                 gkh.KeyUp -= gkh_KeyUp;
             }
         }
+
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Dictionary<int, string> test_dic = new Dictionary<int, string>();
@@ -199,20 +229,22 @@ namespace Wpf_comboKeyboard
 
 
         }
+
+        /// <summary>Keyboard UI image mouse down</summary>
         private void keyboardImageClick_MouseDown(object sender, MouseButtonEventArgs e)
         {
             string Name = ((Grid)sender).Name;
             Console.WriteLine(Name);
-            if (waitComboKey)
-            {
+
+            if (waitAComboKey)
+            {//set the combo key
                 ComboKey = Name2Key[Name];
                 if (!gkh.HookedKeys.Exists(x => x == ComboKey))
                     gkh.HookedKeys.Add(ComboKey);
 
-                waitComboKey = false;
+                waitAComboKey = false;
                 tb_comboKey.Text = Name;
             }
-
 
             //   select_002.Margin = ((Grid)sender).Margin;
         }
@@ -221,7 +253,7 @@ namespace Wpf_comboKeyboard
         {
             if (e.Key == ComboKey)
             {
-                capsPress = true;
+                ComboKeyPress = true;
                 Console.WriteLine("combo press");
                 e.Handled = true;
             }
@@ -230,7 +262,7 @@ namespace Wpf_comboKeyboard
         {
             if (e.Key == ComboKey)
             {
-                capsPress = true;
+                ComboKeyPress = true;
                 Console.WriteLine("combo press");
                 e.Handled = true;
             }
@@ -260,8 +292,65 @@ namespace Wpf_comboKeyboard
             Console.WriteLine(e.Key.ToString());
         }
 
-        bool waitComboKey = false;
 
 
+        private void Img_keyboard_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Btn_openFolder_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(keyPath);
+        }
+    }//main class
+    public class ListViewData : INotifyPropertyChanged
+    {
+        bool _check;
+        string _OrgKey;
+        string _SwiKey;
+
+        public ListViewData(string orgKey, string swiKey)
+        {
+            _check = false;
+            OrgKey = orgKey;
+            SwiKey = swiKey;
+        }
+        public bool isChecked
+        {
+            set
+            {
+                _check = value;
+                NotifyPropertyChanged("isChecked");
+            }
+            get { return _check; }
+        }
+        public string OrgKey
+        {
+            set
+            {
+                _OrgKey = value;
+                NotifyPropertyChanged("Org");
+            }
+            get { return _OrgKey; }
+        }
+        public string SwiKey
+        {
+            set
+            {
+                _SwiKey = value;
+                NotifyPropertyChanged("Swi");
+            }
+            get { return _SwiKey; }
+        }
+
+        public SolidColorBrush Color1 { get; set; } = new SolidColorBrush(Colors.Black);
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            { PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); }
+        }
     }
 }

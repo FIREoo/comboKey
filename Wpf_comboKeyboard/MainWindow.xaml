@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_comboKeyboard"
         mc:Ignorable="d"
-        Title="ComboKey" Height="533.456" Width="948" Loaded="Window_Loaded" StateChanged="MyWindow_StateChanged" Topmost="True" >
+        Title="ComboKey" Height="533.456" Width="1111" Loaded="Window_Loaded" StateChanged="MyWindow_StateChanged" Topmost="True" >
     <Grid Background="#FF282A2C">
-        <Grid HorizontalAlignment="Center" Height="350" VerticalAlignment="Top" Width="840" Margin="0,10,0,0">
+        <Grid HorizontalAlignment="Right" Height="350" VerticalAlignment="Top" Width="840" Margin="0,10,10,0">
             <Image x:Name="img_keyboard" HorizontalAlignment="Stretch"  Margin="0,0,0,0" VerticalAlignment="Stretch" Source="Resources/keyboard80_word.png" MouseDown="Img_keyboard_MouseDown" MouseEnter="Img_keyboard_MouseEnter" MouseLeave="Img_keyboard_MouseLeave" MouseMove="Img_keyboard_MouseMove"  />
             <Image x:Name="img_selectMask" HorizontalAlignment="Left" Height="58" Margin="60,13,0,0" VerticalAlignment="Top" Width="58" Source="pack://siteoforigin:,,,/Resources/mask_normal.png"/>
             <Image x:Name="select_002" HorizontalAlignment="Left" Height="54" Margin="55,6,0,0" VerticalAlignment="Top" Width="54"/>
@@ -88,13 +88,65 @@
 
         </Grid>
         <TextBox HorizontalAlignment="Left" Height="23" Margin="246,469,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" KeyDown="TextBox_KeyDown"/>
-        <TextBlock HorizontalAlignment="Left" Margin="60,381,0,0" TextWrapping="Wrap" Text="Combo Key : " VerticalAlignment="Top" Foreground="White" FontSize="18"/>
-        <TextBox x:Name="tb_comboKey" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="27" Margin="176,379,0,0" TextWrapping="Wrap" Text="Caps Lock" VerticalAlignment="Top" Width="104" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="18" IsReadOnly="True" Cursor="Hand" MouseDoubleClick="Tb_comboKey_MouseDoubleClick" />
+        <TextBlock HorizontalAlignment="Left" Margin="257,378,0,0" TextWrapping="Wrap" Text="Combo Key : " VerticalAlignment="Top" Foreground="White" FontSize="18"/>
+        <TextBox x:Name="tb_comboKey" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="27" Margin="373,376,0,0" TextWrapping="Wrap" Text="Caps Lock" VerticalAlignment="Top" Width="104" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="18" IsReadOnly="True" Cursor="Hand" MouseDoubleClick="Tb_comboKey_MouseDoubleClick" />
         <Button Content="Button" HorizontalAlignment="Left" Margin="96,446,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <CheckBox x:Name="cb_hook" Content="Hook" HorizontalAlignment="Left" Margin="290,377,0,0" VerticalAlignment="Top" Foreground="White" Click="Cb_hook_Click">
+        <CheckBox x:Name="cb_hook" Content="Hook" HorizontalAlignment="Left" Margin="487,374,0,0" VerticalAlignment="Top" Foreground="White" Click="Cb_hook_Click">
             <CheckBox.LayoutTransform>
                 <ScaleTransform ScaleX="2" ScaleY="2" />
             </CheckBox.LayoutTransform>
         </CheckBox>
+        <ListView x:Name="LV_switchKey" HorizontalAlignment="Left" Height="303" Margin="10,57,0,0" VerticalAlignment="Top" Width="238" BorderBrush="#FF93969C" Background="#FF282A2C" FontSize="20">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+
+            <ListView.View>
+                <GridView>
+                    <GridView.ColumnHeaderContainerStyle>
+                        <Style TargetType="{x:Type GridViewColumnHeader}">
+                            <!-- Set any properties you want to set -->
+                            <Setter Property="Background" Value="#FF505459" />
+                            <Setter Property="Foreground" Value="#FFFDFDFD" />
+                            <Setter Property="BorderBrush" Value="#FF282A2C" />
+                        </Style>
+                    </GridView.ColumnHeaderContainerStyle>
+
+                    <GridViewColumn  Header="" Width="30">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="Transparent">
+                                    <CheckBox IsChecked="{Binding isChecked}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn  Header="Origin" Width="80" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="Transparent">
+                                    <TextBlock Text="{Binding Org}" Foreground="#FFFDFDFD"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn  Header="Switch" Width="80" >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Background="Transparent">
+                                    <TextBlock Text="{Binding swi}" Foreground="#FFFDFDFD"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="btn_openFolder" Content="open file folder" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="25" Click="Btn_openFolder_Click"/>
     </Grid>
 </Window>

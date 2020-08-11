@@ -65,16 +65,10 @@ namespace Utilities
 
         public delegate void KeyPressHandler(KeyArgs e);
         public event KeyPressHandler KeyEvent;
-        /// <summary>
-        /// Occurs when one of the hooked keys is pressed
-        /// </summary>
+        /// <summary>Occurs when one of the hooked keys is pressed</summary>
         public event KeyPressHandler KeyDown;
-        //public event KeyEventHandler KeyDown;
-        /// <summary>
-        /// Occurs when one of the hooked keys is released
-        /// </summary>
+        /// <summary>Occurs when one of the hooked keys is released</summary>
         public event KeyPressHandler KeyUp;
-        //public  event KeyEventHandler KeyUp;
         #endregion
 
         #region Constructors and Destructors
@@ -97,9 +91,7 @@ namespace Utilities
         #endregion
 
         #region Public Methods
-        /// <summary>
-        /// Installs the global hook
-        /// </summary>
+        /// <summary>Installs the global hook</summary>
         //public void hook()
         //{
         //    IntPtr hInstance = LoadLibrary("User32");
