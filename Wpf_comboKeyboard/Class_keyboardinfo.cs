@@ -119,7 +119,7 @@ namespace Utilities
             {
                 Key key = KeyInterop.KeyFromVirtualKey(lParam.vkCode);
                 KeyArgs args = new KeyArgs(key,lParam.vkCode);
-                KeyEvent(args);
+                KeyEvent?.Invoke(args);
                 if (args.Handled)
                     return 1;//吃掉 這個鍵
                 if (HookedKeys.Contains(key))

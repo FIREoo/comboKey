@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using Utilities;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Wpf_comboKeyboard
 {
@@ -40,10 +41,16 @@ namespace Wpf_comboKeyboard
         bool ComboKeyPress = false;
         /// <summary>Wait to set a combo key press</summary>
         bool waitAComboKey = false;
+
+        //virtual keyboard
+        [DllImport("user32.dll")]
+        static extern void keybd_event(int bVk, byte bScan, uint dwFlags, int dwExtraInfo);//用來打字的
+
         public MainWindow()
         {
             InitializeComponent();
 
+            //Key  board UI 顯示
             var imgKeyboard = Wpf_comboKeyboard.Properties.Resources.keyboard80_word;
             MemoryStream memory = new MemoryStream();
             imgKeyboard.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
@@ -51,6 +58,7 @@ namespace Wpf_comboKeyboard
             ImageSource source = (ImageSource)converter.ConvertFrom(memory);
             img_keyboard.Source = source;
 
+            //key mask UI
             var testImg = Wpf_comboKeyboard.Properties.Resources.mask_normal;
             memory = new MemoryStream();
             testImg.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
@@ -61,6 +69,7 @@ namespace Wpf_comboKeyboard
             // select_002.Visibility = Visibility.Hidden;
             img_selectMask.Visibility = Visibility.Hidden;
 
+            //window icon UI
             var myIcon = Wpf_comboKeyboard.Properties.Resources.keyboard_icon1;
             memory = new MemoryStream();
             myIcon.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
@@ -86,8 +95,9 @@ namespace Wpf_comboKeyboard
             keyboardImageGridIni();
             keyNameIni();
 
+
             select_002.MouseDown += keyboardImageClick_MouseDown;
-            gkh.KeyEvent += new globalKeyboardHook.KeyPressHandler(gkh_KeyEvent);
+            //gkh.KeyEvent += new globalKeyboardHook.KeyPressHandler(gkh_KeyEvent);
 
             //switch key list view
             LV_switchKey.ItemsSource = ListViewData_SwitchKey;
@@ -99,7 +109,7 @@ namespace Wpf_comboKeyboard
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string MyDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            keyPath = MyDocumentsPath+"\\KeyFile";
+            keyPath = MyDocumentsPath + "\\KeyFile";
             //check folder         
             if (Directory.Exists(keyPath) == false)
                 Directory.CreateDirectory(keyPath);
@@ -115,7 +125,9 @@ namespace Wpf_comboKeyboard
                 WriteTxtInfo();
                 ReadTxtInfo();
             }
-            gkh.HookedKeys.Add(ComboKey);
+
+
+
 
             //gkh.HookedKeys.Add(Keys.RControlKey);
             //gkh.HookedKeys.Add(Keys.CapsLock);
@@ -135,19 +147,21 @@ namespace Wpf_comboKeyboard
 
             //gkh.HookedKeys.Add(Keys.Tab);//capsLock
 
-            gkh.KeyDown += new globalKeyboardHook.KeyPressHandler(gkh_KeyDown);
-            gkh.KeyUp += new globalKeyboardHook.KeyPressHandler(gkh_KeyUp);
         }
+        /// <summary>read text and hook</summary>
         void ReadTxtInfo()
         {
             string[] allString = System.IO.File.ReadAllLines(infoFile);
             //取得combo key
             string str = allString[0].Substring(9, allString[0].Length - 10);//comboKey(CapsLock)
-            for(int L = 1;L<allString.Count();L++)
+            for (int L = 1; L < allString.Count(); L++)
             {
-                var line = allString[L];
+                string line = allString[L];
+                SwitchKeyDic.Add(Name2Key[line.Split('\t')[0]], Name2Key[line.Split('\t')[1]]);
+                gkh.HookedKeys.Add(Name2Key[line.Split('\t')[0]]);
             }
             ComboKey = Name2Key[str];
+            gkh.HookedKeys.Add(ComboKey);
         }
         void WriteTxtInfo()
         {
@@ -266,10 +280,38 @@ namespace Wpf_comboKeyboard
                 Console.WriteLine("combo press");
                 e.Handled = true;
             }
+            else
+            {
+                if (ComboKeyPress == true)
+                {
+                    // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
+                    Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
+                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 0);
+                    e.Handled = true;
+                }
+            }
+
         }
         void gkh_KeyUp(KeyArgs e)
         {
-
+            //要注意一個問題
+            //com press, A press, com release, A release  你A就會被吃掉
+            if (e.Key == ComboKey)
+            {
+                ComboKeyPress = false;
+                Console.WriteLine("combo release");
+                e.Handled = true;
+            }
+            else
+            {
+                if (ComboKeyPress == true)
+                {
+                    // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
+                    Console.WriteLine(e.Key.ToString() + "_release");
+                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 0);
+                    e.Handled = true;
+                }
+            }
         }
 
         //select mask

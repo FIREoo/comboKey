@@ -23,10 +23,11 @@ namespace Wpf_comboKeyboard
 {
     public partial class MainWindow : Window
     {
-        [DllImport("user32.dll")]
-        static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);//用來打字的
+        //[DllImport("user32.dll")]
+        //static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);//用來打字的
 
-        const uint KEYEVENTF_KEYUP = 0x0002;
+        //const uint KEYEVENTF_KEYUP = 0x0002;
+        /*
         void downKey(Keys _key)
         {
             keybd_event(KeysToVK(_key), 0, 0, 0);
@@ -239,7 +240,164 @@ namespace Wpf_comboKeyboard
             }
             return Keys.OemMinus;
         }
+        Keys NameToKeys(string name)
+        {
+            switch (name)
+            {
+                case "Esc":
+                    return Keys.Escape;
+                case "F1":
+                    return Keys.F1;
+                case "F2":
+                    return Keys.F2;
+                case "F3":
+                    return Keys.F3;
+                case "F4":
+                    return Keys.F4;
+                case "F5":
+                    return Keys.F5;
+                case "F6":
+                    return Keys.F6;
+                case "F7":
+                    return Keys.F7;
+                case "F8":
+                    return Keys.F8;
+                case "F9":
+                    return Keys.F9;
+                case "F10":
+                    return Keys.F10;
+                case "F11":
+                    return Keys.F11;
+                case "F12":
+                    return Keys.F12;
+                case "Tilde":
+                    return Keys.Oemtilde;
+                case "num1":
+                    return Keys.D1;
+                case "num2":
+                    return Keys.D2;
+                case "num3":
+                    return Keys.D3;
+                case "num4":
+                    return Keys.D4;
+                case "num5":
+                    return Keys.D5;
+                case "num6":
+                    return Keys.D6;
+                case "num7":
+                    return Keys.D7;
+                case "num8":
+                    return Keys.D8;
+                case "num9":
+                    return Keys.D9;
+                case "num0":
+                    return Keys.D0;
+                case "Dash":
+                    return Keys.OemMinus;
+                case "Equal":
+                    return Keys.Oemplus;
+                case "BackSpace":
+                    return Keys.Back;
+                case "Tab":
+                    return Keys.Tab;
+                case "Q":
+                    return Keys.Q;
+                case "W":
+                    return Keys.W;
+                case "E":
+                    return Keys.E;
+                case "R":
+                    return Keys.R;
+                case "T":
+                    return Keys.T;
+                case "Y":
+                    return Keys.Y;
+                case "U":
+                    return Keys.U;
+                case "I":
+                    return Keys.I;
+                case "O":
+                    return Keys.O;
+                case "P":
+                    return Keys.P;
+                case "OpenBracket":
+                    return Keys.OemOpenBrackets;// [
+                case "CloseBracket":
+                    return Keys.OemCloseBrackets;// ] Oem6
+                case "BackSlash":
+                    return Keys.OemPipe;// |  Oem5
+                case "CapsLock":
+                    return Keys.CapsLock;
+                case "A":
+                    return Keys.A;
+                case "S":
+                    return Keys.S;
+                case "D":
+                    return Keys.D;
+                case "F":
+                    return Keys.F;
+                case "G":
+                    return Keys.G;
+                case "H":
+                    return Keys.H;
+                case "J":
+                    return Keys.J;
+                case "K":
+                    return Keys.K;
+                case "L":
+                    return Keys.L;
+                case "Semicolon":
+                    return Keys.OemSemicolon;// ; oem1
+                case "SingleQuote":
+                    return Keys.OemQuotes;// ' oem7
+                case "Enter":
+                    return Keys.Enter;
+                case "LShift":
+                    return Keys.LShiftKey;
+                case "Z":
+                    return Keys.Z;
+                case "X":
+                    return Keys.X;
+                case "C":
+                    return Keys.C;
+                case "V":
+                    return Keys.V;
+                case "B":
+                    return Keys.B;
+                case "N":
+                    return Keys.N;
+                case "M":
+                    return Keys.M;
+                case "Comma":
+                    return Keys.Oemcomma;
+                case "Period":
+                    return Keys.OemPeriod;
+                case "Slash":
+                    return Keys.OemQuestion;
+                case "RShift":
+                    return Keys.RShiftKey;
+                case "LCrtl":
+                    return Keys.LControlKey;
+                case "LWin":
+                    return Keys.LWin;
+                case "LAlt":
+                    return Keys.LMenu;
+                case "Space":
+                    return Keys.Space;
+                case "RAlt":
+                    return Keys.RMenu;
+                case "RWin":
+                    return Keys.RWin;
+                case "Menu":
+                    return Keys.Apps;
+                case "RCtrl":
+                    return Keys.RControlKey;
 
+                default:
+                    return Keys.CapsLock;
+            }
+        }
+        */
         void keyboardImageGridIni()
         {
             grid_001.MouseDown += keyboardImageClick_MouseDown;
@@ -398,7 +556,6 @@ namespace Wpf_comboKeyboard
         }
         Dictionary<string, Key> Name2Key = new Dictionary<string, Key>();
         Dictionary<Key, string> Key2Name = new Dictionary<Key, string>();
-
         void keyNameIni()
         {
             Name2Key.Add("Esc", Key.Escape);
@@ -552,165 +709,6 @@ namespace Wpf_comboKeyboard
             Key2Name.Add(Key.RightCtrl, "RCtrl");
 
         }
-        Keys NameToKeys(string name)
-        {
-      
 
-
-            switch (name)
-            {
-                case "Esc":
-                    return Keys.Escape;
-                case "F1":
-                    return Keys.F1;
-                case "F2":
-                    return Keys.F2;
-                case "F3":
-                    return Keys.F3;
-                case "F4":
-                    return Keys.F4;
-                case "F5":
-                    return Keys.F5;
-                case "F6":
-                    return Keys.F6;
-                case "F7":
-                    return Keys.F7;
-                case "F8":
-                    return Keys.F8;
-                case "F9":
-                    return Keys.F9;
-                case "F10":
-                    return Keys.F10;
-                case "F11":
-                    return Keys.F11;
-                case "F12":
-                    return Keys.F12;
-                case "Tilde":
-                    return Keys.Oemtilde;
-                case "num1":
-                    return Keys.D1;
-                case "num2":
-                    return Keys.D2;
-                case "num3":
-                    return Keys.D3;
-                case "num4":
-                    return Keys.D4;
-                case "num5":
-                    return Keys.D5;
-                case "num6":
-                    return Keys.D6;
-                case "num7":
-                    return Keys.D7;
-                case "num8":
-                    return Keys.D8;
-                case "num9":
-                    return Keys.D9;
-                case "num0":
-                    return Keys.D0;
-                case "Dash":
-                    return Keys.OemMinus;
-                case "Equal":
-                    return Keys.Oemplus;
-                case "BackSpace":
-                    return Keys.Back;
-                case "Tab":
-                    return Keys.Tab;
-                case "Q":
-                    return Keys.Q;
-                case "W":
-                    return Keys.W;
-                case "E":
-                    return Keys.E;
-                case "R":
-                    return Keys.R;
-                case "T":
-                    return Keys.T;
-                case "Y":
-                    return Keys.Y;
-                case "U":
-                    return Keys.U;
-                case "I":
-                    return Keys.I;
-                case "O":
-                    return Keys.O;
-                case "P":
-                    return Keys.P;
-                case "OpenBracket":
-                    return Keys.OemOpenBrackets;// [
-                case "CloseBracket":
-                    return Keys.OemCloseBrackets;// ] Oem6
-                case "BackSlash":
-                    return Keys.OemPipe;// |  Oem5
-                case "CapsLock":
-                    return Keys.CapsLock;
-                case "A":
-                    return Keys.A;
-                case "S":
-                    return Keys.S;
-                case "D":
-                    return Keys.D;
-                case "F":
-                    return Keys.F;
-                case "G":
-                    return Keys.G;
-                case "H":
-                    return Keys.H;
-                case "J":
-                    return Keys.J;
-                case "K":
-                    return Keys.K;
-                case "L":
-                    return Keys.L;
-                case "Semicolon":
-                    return Keys.OemSemicolon;// ; oem1
-                case "SingleQuote":
-                    return Keys.OemQuotes;// ' oem7
-                case "Enter":
-                    return Keys.Enter;
-                case "LShift":
-                    return Keys.LShiftKey;
-                case "Z":
-                    return Keys.Z;
-                case "X":
-                    return Keys.X;
-                case "C":
-                    return Keys.C;
-                case "V":
-                    return Keys.V;
-                case "B":
-                    return Keys.B;
-                case "N":
-                    return Keys.N;
-                case "M":
-                    return Keys.M;
-                case "Comma":
-                    return Keys.Oemcomma;
-                case "Period":
-                    return Keys.OemPeriod;
-                case "Slash":
-                    return Keys.OemQuestion;
-                case "RShift":
-                    return Keys.RShiftKey;
-                case "LCrtl":
-                    return Keys.LControlKey;
-                case "LWin":
-                    return Keys.LWin;
-                case "LAlt":
-                    return Keys.LMenu;
-                case "Space":
-                    return Keys.Space;
-                case "RAlt":
-                    return Keys.RMenu;
-                case "RWin":
-                    return Keys.RWin;
-                case "Menu":
-                    return Keys.Apps;
-                case "RCtrl":
-                    return Keys.RControlKey;
-
-                default:
-                    return Keys.CapsLock;
-            }
-        }
     }
 }
