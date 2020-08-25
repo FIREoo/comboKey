@@ -9,8 +9,6 @@
     <Grid Background="#FF282A2C">
         <Grid HorizontalAlignment="Right" Height="350" VerticalAlignment="Top" Width="840" Margin="0,10,10,0">
             <Image x:Name="img_keyboard" HorizontalAlignment="Stretch"  Margin="0,0,0,0" VerticalAlignment="Stretch" Source="Resources/keyboard80_word.png" MouseDown="Img_keyboard_MouseDown" MouseEnter="Img_keyboard_MouseEnter" MouseLeave="Img_keyboard_MouseLeave" MouseMove="Img_keyboard_MouseMove"  />
-            <Image x:Name="img_selectMask" HorizontalAlignment="Left" Height="58" Margin="60,13,0,0" VerticalAlignment="Top" Width="58" Source="pack://siteoforigin:,,,/Resources/mask_normal.png"/>
-            <Image x:Name="select_002" HorizontalAlignment="Left" Height="54" Margin="55,6,0,0" VerticalAlignment="Top" Width="54"/>
             <Grid x:Name="grid_001" HorizontalAlignment="Left" Height="54" Margin="1,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
             <Grid x:Name="grid_002" HorizontalAlignment="Left" Height="54" Margin="113,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
             <Grid x:Name="grid_003" HorizontalAlignment="Left" Height="54" Margin="169,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
@@ -96,10 +94,15 @@
                 <ScaleTransform ScaleX="2" ScaleY="2" />
             </CheckBox.LayoutTransform>
         </CheckBox>
-        <ListView x:Name="LV_switchKey" HorizontalAlignment="Left" Height="303" Margin="10,57,0,0" VerticalAlignment="Top" Width="238" BorderBrush="#FF93969C" Background="#FF282A2C" FontSize="20">
+        <ListView x:Name="LV_switchKey" HorizontalAlignment="Left" Height="303" Margin="10,57,0,0" VerticalAlignment="Top" Width="238" BorderBrush="#FF93969C" Background="#FF282A2C" FontSize="20" Foreground="White">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#FF505459" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
 
@@ -107,14 +110,13 @@
                 <GridView>
                     <GridView.ColumnHeaderContainerStyle>
                         <Style TargetType="{x:Type GridViewColumnHeader}">
-                            <!-- Set any properties you want to set -->
                             <Setter Property="Background" Value="#FF505459" />
                             <Setter Property="Foreground" Value="#FFFDFDFD" />
-                            <Setter Property="BorderBrush" Value="#FF282A2C" />
+                            <Setter Property="BorderBrush" Value="#FF252526" />
                         </Style>
                     </GridView.ColumnHeaderContainerStyle>
 
-                    <GridViewColumn  Header="" Width="30">
+                    <GridViewColumn  Header="" Width="18">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent">
@@ -128,17 +130,17 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent">
-                                    <TextBlock Text="{Binding Org}" Foreground="#FFFDFDFD"/>
+                                    <TextBlock Text="{Binding OrgKey}" Foreground="#FFFDFDFD"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn  Header="Switch" Width="80" >
+                    <GridViewColumn  Header="Switch" Width="130" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent">
-                                    <TextBlock Text="{Binding swi}" Foreground="#FFFDFDFD"/>
+                                    <TextBlock Text="{Binding SwiKey}" Foreground="#FFFDFDFD"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

@@ -558,7 +558,7 @@ namespace Wpf_comboKeyboard
         Dictionary<Key, string> Key2Name = new Dictionary<Key, string>();
         void keyNameIni()
         {
-            Name2Key.Add("Esc", Key.Escape);
+            Name2Key.Add("Esc", Key.Escape); Name2Key.Add("esc", Key.Escape);
             Name2Key.Add("F1", Key.F1);
             Name2Key.Add("F2", Key.F2);
             Name2Key.Add("F3", Key.F3);
@@ -571,7 +571,7 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("F10", Key.F10);
             Name2Key.Add("F11", Key.F11);
             Name2Key.Add("F12", Key.F12);
-            Name2Key.Add("Tilde", Key.OemTilde);
+            Name2Key.Add("Tilde", Key.OemTilde); Name2Key.Add("`", Key.OemTilde);
             Name2Key.Add("num1", Key.D1);
             Name2Key.Add("num2", Key.D2);
             Name2Key.Add("num3", Key.D3);
@@ -582,10 +582,10 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("num8", Key.D8);
             Name2Key.Add("num9", Key.D9);
             Name2Key.Add("num0", Key.D0);
-            Name2Key.Add("Dash", Key.OemMinus);
-            Name2Key.Add("Equal", Key.OemPlus);
+            Name2Key.Add("Dash", Key.OemMinus); Name2Key.Add("-", Key.OemMinus);
+            Name2Key.Add("Equal", Key.OemPlus); Name2Key.Add("=", Key.OemPlus);
             Name2Key.Add("BackSpace", Key.Back);
-            Name2Key.Add("Tab", Key.Tab);
+            Name2Key.Add("Tab", Key.Tab); Name2Key.Add("tab", Key.Tab);
             Name2Key.Add("Q", Key.Q);
             Name2Key.Add("W", Key.W);
             Name2Key.Add("E", Key.E);
@@ -596,10 +596,10 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("I", Key.I);
             Name2Key.Add("O", Key.O);
             Name2Key.Add("P", Key.P);
-            Name2Key.Add("OpenBracket", Key.OemOpenBrackets);// [
-            Name2Key.Add("CloseBracket", Key.OemCloseBrackets);// ] Oem6
-            Name2Key.Add("BackSlash", Key.OemPipe);// |  Oem5
-            Name2Key.Add("CapsLock", Key.CapsLock);
+            Name2Key.Add("OpenBracket", Key.OemOpenBrackets); Name2Key.Add("[", Key.OemOpenBrackets);
+            Name2Key.Add("CloseBracket", Key.OemCloseBrackets); Name2Key.Add("]", Key.OemCloseBrackets);// ] Oem6
+            Name2Key.Add("BackSlash", Key.OemPipe); Name2Key.Add("\\", Key.OemPipe);// |  Oem5
+            Name2Key.Add("CapsLock", Key.CapsLock); Name2Key.Add("Caps", Key.CapsLock);
             Name2Key.Add("A", Key.A);
             Name2Key.Add("S", Key.S);
             Name2Key.Add("D", Key.D);
@@ -609,10 +609,10 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("J", Key.J);
             Name2Key.Add("K", Key.K);
             Name2Key.Add("L", Key.L);
-            Name2Key.Add("Semicolon", Key.OemSemicolon);// ); oem1
-            Name2Key.Add("SingleQuote", Key.OemQuotes);// ' oem7
+            Name2Key.Add("Semicolon", Key.OemSemicolon); Name2Key.Add(";", Key.OemSemicolon);// ; oem1
+            Name2Key.Add("SingleQuote", Key.OemQuotes); Name2Key.Add("'", Key.OemQuotes);// ' oem7
             Name2Key.Add("Enter", Key.Enter);
-            Name2Key.Add("LShift", Key.LeftShift);
+            Name2Key.Add("LShift", Key.LeftShift); Name2Key.Add("LeftShift", Key.LeftShift);
             Name2Key.Add("Z", Key.Z);
             Name2Key.Add("X", Key.X);
             Name2Key.Add("C", Key.C);
@@ -620,11 +620,11 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("B", Key.B);
             Name2Key.Add("N", Key.N);
             Name2Key.Add("M", Key.M);
-            Name2Key.Add("Comma", Key.OemComma);
-            Name2Key.Add("Period", Key.OemPeriod);
-            Name2Key.Add("Slash", Key.OemQuestion);
-            Name2Key.Add("RShift", Key.RightShift);
-            Name2Key.Add("LCrtl", Key.RightCtrl);
+            Name2Key.Add("Comma", Key.OemComma); Name2Key.Add(",", Key.OemComma);
+            Name2Key.Add("Period", Key.OemPeriod); Name2Key.Add(".", Key.OemPeriod);
+            Name2Key.Add("Slash", Key.OemQuestion); Name2Key.Add("/", Key.OemQuestion);
+            Name2Key.Add("RShift", Key.RightShift); Name2Key.Add("RightShift", Key.RightShift);
+            Name2Key.Add("LCrtl", Key.LeftCtrl); Name2Key.Add("LeftCtrl", Key.LeftCtrl);
             Name2Key.Add("LWin", Key.LWin);
             Name2Key.Add("LAlt", Key.LeftAlt);
             Name2Key.Add("Space", Key.Space);
@@ -632,6 +632,17 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("RWin", Key.RWin);
             Name2Key.Add("Menu", Key.Apps);
             Name2Key.Add("RCtrl", Key.RightCtrl);
+            Name2Key.Add("Insert", Key.Insert); Name2Key.Add("Ins", Key.Insert);
+            Name2Key.Add("Home", Key.Home); Name2Key.Add("Hme", Key.Home);
+            Name2Key.Add("End", Key.End); 
+            Name2Key.Add("Delete", Key.Delete); Name2Key.Add("Del", Key.Delete);
+            Name2Key.Add("PageUp", Key.PageUp); Name2Key.Add("Pgu", Key.PageUp);
+            Name2Key.Add("PageDown", Key.PageDown); Name2Key.Add("Pgd", Key.PageDown);
+            Name2Key.Add( "Up",Key.Up); Name2Key.Add("ArrowUp", Key.Up);
+            Name2Key.Add( "Down",Key.Down); Name2Key.Add("ArrowDown", Key.Down);
+            Name2Key.Add( "Left",Key.Left); Name2Key.Add("ArrowLeft", Key.Left);
+            Name2Key.Add( "Right",Key.Right); Name2Key.Add("ArrowRight", Key.Right);
+
 
             Key2Name.Add(Key.Escape, "Esc");
             Key2Name.Add(Key.F1, "F1");
@@ -684,7 +695,7 @@ namespace Wpf_comboKeyboard
             Key2Name.Add(Key.J, "J");
             Key2Name.Add(Key.K, "K");
             Key2Name.Add(Key.L, "L");
-            Key2Name.Add(Key.OemSemicolon, "Semicolon");//  oem1
+            Key2Name.Add(Key.OemSemicolon, "Semicolon");//;  oem1
             Key2Name.Add(Key.OemQuotes, "SingleQuote");// ' oem7
             Key2Name.Add(Key.Enter, "Enter");
             Key2Name.Add(Key.LeftShift, "LShift");
@@ -695,9 +706,9 @@ namespace Wpf_comboKeyboard
             Key2Name.Add(Key.B, "B");
             Key2Name.Add(Key.N, "N");
             Key2Name.Add(Key.M, "M");
-            Key2Name.Add(Key.OemComma, "Comma");
-            Key2Name.Add(Key.OemPeriod, "Period");
-            Key2Name.Add(Key.OemQuestion, "Slash");
+            Key2Name.Add(Key.OemComma, "Comma");// ,
+            Key2Name.Add(Key.OemPeriod, "Period");// .
+            Key2Name.Add(Key.OemQuestion, "Slash");// /
             Key2Name.Add(Key.RightShift, "RShift");
             Key2Name.Add(Key.LeftCtrl, "LCrtl");
             Key2Name.Add(Key.LWin, "LWin");
@@ -708,6 +719,17 @@ namespace Wpf_comboKeyboard
             Key2Name.Add(Key.Apps, "Menu");
             Key2Name.Add(Key.RightCtrl, "RCtrl");
 
+            Key2Name.Add(Key.Insert, "Insert");
+            Key2Name.Add(Key.Home, "Home");
+            Key2Name.Add(Key.End, "End");
+            Key2Name.Add(Key.Delete, "Delete");
+            Key2Name.Add(Key.PageUp, "PageUp");
+            Key2Name.Add(Key.PageDown, "PageDown");
+
+            Key2Name.Add(Key.Up, "Up");
+            Key2Name.Add(Key.Down, "Down");
+            Key2Name.Add(Key.Left, "Left");
+            Key2Name.Add(Key.Right, "Right");
         }
 
     }

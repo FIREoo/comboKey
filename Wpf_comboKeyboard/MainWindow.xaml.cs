@@ -46,6 +46,8 @@ namespace Wpf_comboKeyboard
         [DllImport("user32.dll")]
         static extern void keybd_event(int bVk, byte bScan, uint dwFlags, int dwExtraInfo);//用來打字的
 
+        ImageSource imgKeyMask;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -59,15 +61,11 @@ namespace Wpf_comboKeyboard
             img_keyboard.Source = source;
 
             //key mask UI
-            var testImg = Wpf_comboKeyboard.Properties.Resources.mask_normal;
+            var bitKeyMask = Wpf_comboKeyboard.Properties.Resources.mask_normal;
             memory = new MemoryStream();
-            testImg.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+            bitKeyMask.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
             converter = new ImageSourceConverter();
-            source = (ImageSource)converter.ConvertFrom(memory);
-            img_selectMask.Source = source;
-            select_002.Source = source;
-            // select_002.Visibility = Visibility.Hidden;
-            img_selectMask.Visibility = Visibility.Hidden;
+            imgKeyMask = (ImageSource)converter.ConvertFrom(memory);
 
             //window icon UI
             var myIcon = Wpf_comboKeyboard.Properties.Resources.keyboard_icon1;
@@ -95,10 +93,6 @@ namespace Wpf_comboKeyboard
             keyboardImageGridIni();
             keyNameIni();
 
-
-            select_002.MouseDown += keyboardImageClick_MouseDown;
-            //gkh.KeyEvent += new globalKeyboardHook.KeyPressHandler(gkh_KeyEvent);
-
             //switch key list view
             LV_switchKey.ItemsSource = ListViewData_SwitchKey;
         }
@@ -125,9 +119,6 @@ namespace Wpf_comboKeyboard
                 WriteTxtInfo();
                 ReadTxtInfo();
             }
-
-
-
 
             //gkh.HookedKeys.Add(Keys.RControlKey);
             //gkh.HookedKeys.Add(Keys.CapsLock);
@@ -157,8 +148,18 @@ namespace Wpf_comboKeyboard
             for (int L = 1; L < allString.Count(); L++)
             {
                 string line = allString[L];
-                SwitchKeyDic.Add(Name2Key[line.Split('\t')[0]], Name2Key[line.Split('\t')[1]]);
-                gkh.HookedKeys.Add(Name2Key[line.Split('\t')[0]]);
+                if (line == "")
+                    continue;
+                bool error1 = Name2Key.TryGetValue(line.Split('\t')[0], out Key press_key);
+                bool error2 = Name2Key.TryGetValue(line.Split('\t')[1], out Key switch_key);
+                if (error1 == false || error2 == false)
+                {
+                    MessageBox.Show("File text error");
+                    this.Close();
+                }
+                ListViewData_SwitchKey.Add(new ListViewData(line.Split('\t')[0], line.Split('\t')[1]));
+                SwitchKeyDic.Add(press_key, switch_key);
+                gkh.HookedKeys.Add(press_key);
             }
             ComboKey = Name2Key[str];
             gkh.HookedKeys.Add(ComboKey);
@@ -219,35 +220,21 @@ namespace Wpf_comboKeyboard
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Dictionary<int, string> test_dic = new Dictionary<int, string>();
-            List<string> test_string = new List<string>();
-            string[] test_ar = new string[1000000];
-            for (int i = 0; i < 1000000; i++)
-            {
-                test_dic.Add(i, i.ToString());
-                test_string.Add(i.ToString());
-                test_string[i] = i.ToString();
-            }
-
-            var a = test_dic[5000];
-
-            for (int i = 0; i < 1000000; i++)
-            {
-                if (i == 5000)
-                {
-                    var b = test_string[i];
-                }
-            }
-
-            test_string.Find(X => X == 5000.ToString());
+            
 
 
         }
 
+        Grid Grid_LastClick = null;
         /// <summary>Keyboard UI image mouse down</summary>
         private void keyboardImageClick_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if(Grid_LastClick != null)
+            Grid_LastClick.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0,0,0,0));
+               Grid_LastClick = ((Grid)sender);
             string Name = ((Grid)sender).Name;
+            // ((Grid)sender).Background = new SolidBrush(Color.FromArgb(30, 30, 120, 210));
+            ((Grid)sender).Background = new ImageBrush(imgKeyMask);
             Console.WriteLine(Name);
 
             if (waitAComboKey)
@@ -265,19 +252,17 @@ namespace Wpf_comboKeyboard
 
         void gkh_KeyEvent(KeyArgs e)
         {
-            if (e.Key == ComboKey)
-            {
-                ComboKeyPress = true;
-                Console.WriteLine("combo press");
-                e.Handled = true;
-            }
+
+            Console.WriteLine(e.Key.ToString());
+            e.Handled = true;
+
         }
         void gkh_KeyDown(KeyArgs e)
         {
             if (e.Key == ComboKey)
             {
                 ComboKeyPress = true;
-                Console.WriteLine("combo press");
+                //Console.WriteLine("combo press");
                 e.Handled = true;
             }
             else
@@ -285,7 +270,8 @@ namespace Wpf_comboKeyboard
                 if (ComboKeyPress == true)
                 {
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
-                    Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
+                    //Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
+
                     keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 0);
                     e.Handled = true;
                 }
@@ -299,7 +285,7 @@ namespace Wpf_comboKeyboard
             if (e.Key == ComboKey)
             {
                 ComboKeyPress = false;
-                Console.WriteLine("combo release");
+                //Console.WriteLine("combo release");
                 e.Handled = true;
             }
             else
@@ -307,11 +293,23 @@ namespace Wpf_comboKeyboard
                 if (ComboKeyPress == true)
                 {
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
-                    Console.WriteLine(e.Key.ToString() + "_release");
-                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 0);
+                    //Console.WriteLine(e.Key.ToString() + "_release");
+                    if (SwitchKeyDic[e.Key] == Key.CapsLock)
+                        CapsLockSwitch();
+                    else
+                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 0);
                     e.Handled = true;
                 }
             }
+        }
+        void CapsLockSwitch()
+        {
+            gkh.unhook();
+            const int KEYEVENTF_EXTENDEDKEY = 0x1;
+            const int KEYEVENTF_KEYUP = 0x2;
+            keybd_event(0x14, 0x45, KEYEVENTF_EXTENDEDKEY, 0);
+            keybd_event(0x14, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+            gkh.hook();
         }
 
         //select mask
@@ -333,8 +331,6 @@ namespace Wpf_comboKeyboard
         {
             Console.WriteLine(e.Key.ToString());
         }
-
-
 
         private void Img_keyboard_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -372,7 +368,7 @@ namespace Wpf_comboKeyboard
             set
             {
                 _OrgKey = value;
-                NotifyPropertyChanged("Org");
+                NotifyPropertyChanged("OrgKey");
             }
             get { return _OrgKey; }
         }
@@ -381,12 +377,10 @@ namespace Wpf_comboKeyboard
             set
             {
                 _SwiKey = value;
-                NotifyPropertyChanged("Swi");
+                NotifyPropertyChanged("SwiKey");
             }
             get { return _SwiKey; }
         }
-
-        public SolidColorBrush Color1 { get; set; } = new SolidColorBrush(Colors.Black);
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged(string propertyName)
