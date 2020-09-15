@@ -149,6 +149,8 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="btn_openFolder" Content="open file folder" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="25" Click="Btn_openFolder_Click"/>
+        <Button x:Name="btn_openFolder" Content="open file folder" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_openFolder_Click"/>
+        <Button x:Name="btn_reloadFile" Content="Reload file" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="42" Click="Btn_reloadFile_Click"/>
+        <Button x:Name="btn_StartUp" Content="StartUp folder" HorizontalAlignment="Left" Margin="165,365,0,0" VerticalAlignment="Top" Width="83" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_StartUp_Click"/>
     </Grid>
 </Window>

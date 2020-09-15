@@ -109,6 +109,7 @@ namespace Wpf_comboKeyboard
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string MyDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+         
             keyPath = MyDocumentsPath + "\\KeyFile";
             //check folder         
             if (Directory.Exists(keyPath) == false)
@@ -118,12 +119,12 @@ namespace Wpf_comboKeyboard
             infoFile = keyPath + "\\Combokey.txt";
             if (File.Exists(infoFile))
             {
-                ReadTxtInfo();
+                ReadTxtInfo_andHook();
             }
             else
             {
                 WriteTxtInfo();
-                ReadTxtInfo();
+                ReadTxtInfo_andHook();
             }
 
             //啟動時要注意numlock的狀態//應該放在Hook時
@@ -135,7 +136,7 @@ namespace Wpf_comboKeyboard
             gkh.HookedKeys.Add(Key.NumLock);
         }
         /// <summary>read text and hook</summary>
-        void ReadTxtInfo()
+        void ReadTxtInfo_andHook()
         {
             string[] allString = System.IO.File.ReadAllLines(infoFile);
             //取得combo key
@@ -368,6 +369,20 @@ namespace Wpf_comboKeyboard
         private void Btn_openFolder_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(keyPath);
+        }
+
+        private void Btn_reloadFile_Click(object sender, RoutedEventArgs e)
+        {
+            ListViewData_SwitchKey.Clear();
+            SwitchKeyDic.Clear();
+            gkh.HookedKeys.Clear();
+            gkh.HookedKeys.Add(Key.NumLock);
+            ReadTxtInfo_andHook();
+        }
+
+        private void Btn_StartUp_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.Startup));        
         }
     }//main class
     public class ListViewData : INotifyPropertyChanged
