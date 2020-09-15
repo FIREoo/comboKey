@@ -45,6 +45,12 @@ namespace Wpf_comboKeyboard
         //virtual keyboard
         [DllImport("user32.dll")]
         static extern void keybd_event(int bVk, byte bScan, uint dwFlags, int dwExtraInfo);//用來打字的
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
+        public static extern short GetKeyState(int keyCode);
+        bool CapsLock = false;
+        bool NumLock = false;
+        bool ScrollLock = false;
+        bool UserNumLock = true;
 
         ImageSource imgKeyMask;
 
@@ -120,24 +126,13 @@ namespace Wpf_comboKeyboard
                 ReadTxtInfo();
             }
 
-            //gkh.HookedKeys.Add(Keys.RControlKey);
-            //gkh.HookedKeys.Add(Keys.CapsLock);
-            //gkh.HookedKeys.Add(Keys.I);//↑
-            //gkh.HookedKeys.Add(Keys.K);//↓
-            //gkh.HookedKeys.Add(Keys.J);//←
-            //gkh.HookedKeys.Add(Keys.L);//→
-
-            //gkh.HookedKeys.Add(Keys.U);//home
-            //gkh.HookedKeys.Add(Keys.O);//end
-
-            //gkh.HookedKeys.Add(Keys.P);//home
-            //gkh.HookedKeys.Add(Keys.OemSemicolon);//end
-
-            //gkh.HookedKeys.Add(Keys.H);//delet
-            //gkh.HookedKeys.Add(Keys.Q);//esc
-
-            //gkh.HookedKeys.Add(Keys.Tab);//capsLock
-
+            //啟動時要注意numlock的狀態//應該放在Hook時
+            //然後要綁定numlock讓程式永遠知道numlock而不需要每次檢查
+            CapsLock = (((ushort)GetKeyState(0x14)) & 0xffff) != 0;
+            NumLock = (((ushort)GetKeyState(0x90)) & 0xffff) != 0;
+            UserNumLock = NumLock;
+            ScrollLock = (((ushort)GetKeyState(0x91)) & 0xffff) != 0;
+            gkh.HookedKeys.Add(Key.NumLock);
         }
         /// <summary>read text and hook</summary>
         void ReadTxtInfo()
@@ -195,6 +190,7 @@ namespace Wpf_comboKeyboard
             }
         }
 
+        /// <summary>設定combo功能</summary>
         private void Tb_comboKey_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             tb_comboKey.Text = "---";
@@ -207,6 +203,8 @@ namespace Wpf_comboKeyboard
         {
             if (cb_hook.IsChecked == true)
             {
+                NumLock = (((ushort)GetKeyState(0x90)) & 0xffff) != 0;
+                UserNumLock = NumLock;
                 gkh.KeyDown += new globalKeyboardHook.KeyPressHandler(gkh_KeyDown);
                 gkh.KeyUp += new globalKeyboardHook.KeyPressHandler(gkh_KeyUp);
             }
@@ -218,20 +216,13 @@ namespace Wpf_comboKeyboard
         }
 
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
-
-
-        }
-
         Grid Grid_LastClick = null;
         /// <summary>Keyboard UI image mouse down</summary>
         private void keyboardImageClick_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if(Grid_LastClick != null)
-            Grid_LastClick.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0,0,0,0));
-               Grid_LastClick = ((Grid)sender);
+            if (Grid_LastClick != null)
+                Grid_LastClick.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0));
+            Grid_LastClick = ((Grid)sender);
             string Name = ((Grid)sender).Name;
             // ((Grid)sender).Background = new SolidBrush(Color.FromArgb(30, 30, 120, 210));
             ((Grid)sender).Background = new ImageBrush(imgKeyMask);
@@ -250,6 +241,7 @@ namespace Wpf_comboKeyboard
             //   select_002.Margin = ((Grid)sender).Margin;
         }
 
+        //gkh Hook
         void gkh_KeyEvent(KeyArgs e)
         {
 
@@ -262,8 +254,18 @@ namespace Wpf_comboKeyboard
             if (e.Key == ComboKey)
             {
                 ComboKeyPress = true;
+                if (UserNumLock == true)
+                {
+                    keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0, 1);
+                    keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0x0002, 1);
+                }
                 //Console.WriteLine("combo press");
                 e.Handled = true;
+            }
+            else if (e.Key == Key.NumLock)
+            {
+                NumLock = !((((ushort)GetKeyState(0x90)) & 0xffff) != 0);//給個反向，因為先get才換
+                UserNumLock = NumLock;
             }
             else
             {
@@ -272,7 +274,7 @@ namespace Wpf_comboKeyboard
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
                     //Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
 
-                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 0);
+                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1);
                     e.Handled = true;
                 }
             }
@@ -285,8 +287,18 @@ namespace Wpf_comboKeyboard
             if (e.Key == ComboKey)
             {
                 ComboKeyPress = false;
+                if (UserNumLock == true)
+                {
+                    keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0, 1);
+                    keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0x0002, 1);
+                }
                 //Console.WriteLine("combo release");
                 e.Handled = true;
+            }
+            else if (e.Key == Key.NumLock)
+            {
+                //不知道為什麼在這裡讀會出錯，永遠的false
+                //NumLock = ((((ushort)GetKeyState(0x90)) & 0xffff) != 0);
             }
             else
             {
@@ -297,7 +309,7 @@ namespace Wpf_comboKeyboard
                     if (SwitchKeyDic[e.Key] == Key.CapsLock)
                         CapsLockSwitch();
                     else
-                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 0);
+                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 1);
                     e.Handled = true;
                 }
             }
@@ -326,6 +338,22 @@ namespace Wpf_comboKeyboard
 
         }
 
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            NumLock = (((ushort)GetKeyState(0x90)) & 0xffff) != 0;//給個反向，因為先get才換
+            MessageBox.Show($"{NumLock.ToString()},user:{UserNumLock.ToString()}");
+            //    if (NumLock == true)
+            //keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0, 0);//結束後numLock自己變成False了
+            //keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0x0002, 0);
+            //MessageBox.Show($"up:{KeyInterop.VirtualKeyFromKey(Key.Up)},num8:{KeyInterop.VirtualKeyFromKey(Key.NumPad8)}");
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    System.Threading.Thread.Sleep(1000);
+            //    keybd_event(KeyInterop.VirtualKeyFromKey(Key.Up), 0, 0, 0);
+            //}
+
+        }
 
         private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {

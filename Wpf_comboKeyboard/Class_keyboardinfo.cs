@@ -115,27 +115,29 @@ namespace Utilities
         /// <returns></returns>
         public int hookProc(int code, int wParam, ref keyboardHookStruct lParam)
         {
-            if (code >= 0)
-            {
-                Key key = KeyInterop.KeyFromVirtualKey(lParam.vkCode);
-                KeyArgs args = new KeyArgs(key,lParam.vkCode);
-                KeyEvent?.Invoke(args);
-                if (args.Handled)
-                    return 1;//吃掉 這個鍵
-                if (HookedKeys.Contains(key))
+            if (lParam.dwExtraInfo != 1)//等於1的話就是用虛擬的進來的
+                if (code >= 0)
                 {
-                    if ((wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) && (KeyDown != null))
-                    {
-                        KeyDown(args);
-                    }
-                    else if ((wParam == WM_KEYUP || wParam == WM_SYSKEYUP) && (KeyUp != null))
-                    {
-                        KeyUp(args);
-                    }
+
+                    Key key = KeyInterop.KeyFromVirtualKey(lParam.vkCode);
+                    KeyArgs args = new KeyArgs(key, lParam.vkCode);
+                    KeyEvent?.Invoke(args);
                     if (args.Handled)
-                       return 1;//吃掉 這個鍵
+                        return 1;//吃掉 這個鍵
+                    if (HookedKeys.Contains(key))
+                    {
+                        if ((wParam == WM_KEYDOWN || wParam == WM_SYSKEYDOWN) && (KeyDown != null))
+                        {
+                            KeyDown(args);
+                        }
+                        else if ((wParam == WM_KEYUP || wParam == WM_SYSKEYUP) && (KeyUp != null))
+                        {
+                            KeyUp(args);
+                        }
+                        if (args.Handled)
+                            return 1;//吃掉 這個鍵
+                    }
                 }
-            }
             return CallNextHookEx(hhook, code, wParam, ref lParam);
         }
         #endregion
