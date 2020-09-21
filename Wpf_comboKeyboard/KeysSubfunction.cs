@@ -558,7 +558,7 @@ namespace Wpf_comboKeyboard
         Dictionary<Key, string> Key2Name = new Dictionary<Key, string>();
         void keyNameIni()
         {
-            Name2Key.Add("Esc", Key.Escape); Name2Key.Add("esc", Key.Escape);
+            Name2Key.Add("Esc", Key.Escape); Name2Key.Add("esc", Key.Escape); Name2Key.Add(Key.Escape.ToString(), Key.Escape);
             Name2Key.Add("F1", Key.F1);
             Name2Key.Add("F2", Key.F2);
             Name2Key.Add("F3", Key.F3);
@@ -625,13 +625,13 @@ namespace Wpf_comboKeyboard
             Name2Key.Add("Slash", Key.OemQuestion); Name2Key.Add("/", Key.OemQuestion);
             Name2Key.Add("RShift", Key.RightShift); Name2Key.Add("RightShift", Key.RightShift);
             Name2Key.Add("LCrtl", Key.LeftCtrl); Name2Key.Add("LeftCtrl", Key.LeftCtrl);
-            Name2Key.Add("LWin", Key.LWin);
-            Name2Key.Add("LAlt", Key.LeftAlt);
+            Name2Key.Add("LWin", Key.LWin); Name2Key.Add("LeftWin", Key.LWin);
+            Name2Key.Add("LAlt", Key.LeftAlt); Name2Key.Add("LeftAlt", Key.LeftAlt);
             Name2Key.Add("Space", Key.Space);
-            Name2Key.Add("RAlt", Key.RightAlt);
-            Name2Key.Add("RWin", Key.RWin);
+            Name2Key.Add("RAlt", Key.RightAlt); Name2Key.Add("RightAlt", Key.RightAlt);
+            Name2Key.Add("RWin", Key.RWin); Name2Key.Add("RightWin", Key.RWin);
             Name2Key.Add("Menu", Key.Apps);
-            Name2Key.Add("RCtrl", Key.RightCtrl);
+            Name2Key.Add("RCtrl", Key.RightCtrl); Name2Key.Add("RightCtrl", Key.RightCtrl);
             Name2Key.Add("Insert", Key.Insert); Name2Key.Add("Ins", Key.Insert);
             Name2Key.Add("Home", Key.Home); Name2Key.Add("Hme", Key.Home);
             Name2Key.Add("End", Key.End); 

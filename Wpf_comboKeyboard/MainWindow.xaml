@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_comboKeyboard"
         mc:Ignorable="d"
-        Title="ComboKey" Height="533.456" Width="1111" Loaded="Window_Loaded" StateChanged="MyWindow_StateChanged" Topmost="True" >
+        Title="ComboKey" Height="631.216" Width="1111" Loaded="Window_Loaded" StateChanged="MyWindow_StateChanged" Topmost="True" >
     <Grid Background="#FF282A2C">
         <Grid HorizontalAlignment="Right" Height="350" VerticalAlignment="Top" Width="840" Margin="0,10,10,0">
             <Image x:Name="img_keyboard" HorizontalAlignment="Stretch"  Margin="0,0,0,0" VerticalAlignment="Stretch" Source="Resources/keyboard80_word.png" MouseDown="Img_keyboard_MouseDown" MouseEnter="Img_keyboard_MouseEnter" MouseLeave="Img_keyboard_MouseLeave" MouseMove="Img_keyboard_MouseMove"  />
-            <Grid x:Name="grid_001" HorizontalAlignment="Left" Height="54" Margin="1,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
+            <Grid x:Name="grid_001" HorizontalAlignment="Left" Height="54" Margin="1,1,0,0" VerticalAlignment="Top" Width="54" Background="#002619B0"/>
             <Grid x:Name="grid_002" HorizontalAlignment="Left" Height="54" Margin="113,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
             <Grid x:Name="grid_003" HorizontalAlignment="Left" Height="54" Margin="169,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
             <Grid x:Name="grid_004" HorizontalAlignment="Left" Height="54" Margin="225,1,0,0" VerticalAlignment="Top" Width="54" Background="#02000000"/>
@@ -85,10 +85,10 @@
             <Grid x:Name="grid_074" HorizontalAlignment="Left" Height="54" Margin="769,295,0,0" VerticalAlignment="Top" Width="70" Background="#02000000"/>
 
         </Grid>
-        <TextBox HorizontalAlignment="Left" Height="23" Margin="246,469,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" KeyDown="TextBox_KeyDown"/>
+        <TextBox HorizontalAlignment="Left" Height="23" Margin="109,417,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120" KeyDown="TextBox_KeyDown"/>
         <TextBlock HorizontalAlignment="Left" Margin="257,378,0,0" TextWrapping="Wrap" Text="Combo Key : " VerticalAlignment="Top" Foreground="White" FontSize="18"/>
         <TextBox x:Name="tb_comboKey" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="27" Margin="373,376,0,0" TextWrapping="Wrap" Text="Caps Lock" VerticalAlignment="Top" Width="104" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="18" IsReadOnly="True" Cursor="Hand" MouseDoubleClick="Tb_comboKey_MouseDoubleClick" />
-        <Button Content="Button" HorizontalAlignment="Left" Margin="96,446,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click" Height="32"/>
+        <Button Content="Button" HorizontalAlignment="Left" Margin="10,408,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click" Height="32"/>
         <CheckBox x:Name="cb_hook" Content="Hook" HorizontalAlignment="Left" Margin="487,374,0,0" VerticalAlignment="Top" Foreground="White" Click="Cb_hook_Click">
             <CheckBox.LayoutTransform>
                 <ScaleTransform ScaleX="2" ScaleY="2" />
@@ -149,8 +149,48 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="btn_openFolder" Content="open file folder" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_openFolder_Click"/>
+        <Button x:Name="btn_openFolder" HorizontalAlignment="Left" Margin="10,364,0,0" VerticalAlignment="Top" Width="48" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_openFolder_Click">
+            <Grid HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="25">
+                <Rectangle Fill="#FFE0B847" HorizontalAlignment="Left" Height="18" Stroke="Black" VerticalAlignment="Top" Width="25" Margin="0,3,0,0"/>
+                <Rectangle Fill="#FFDE9C00" HorizontalAlignment="Left" Height="6" Stroke="Black" VerticalAlignment="Top" Width="18" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform AngleX="4.669"/>
+                            <RotateTransform/>
+                            <TranslateTransform X="0.179"/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <TextBlock HorizontalAlignment="Left" Margin="10,7,0,-1" TextWrapping="Wrap" Text="?" VerticalAlignment="Top" FontSize="12" FontFamily="Orator Std" FontWeight="Bold" Height="15" Width="8" Foreground="Black"/>
+            </Grid>
+        </Button>
         <Button x:Name="btn_reloadFile" Content="Reload file" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="112" Background="#FF505459" Foreground="#FFFDFDFD" Height="42" Click="Btn_reloadFile_Click"/>
-        <Button x:Name="btn_StartUp" Content="StartUp folder" HorizontalAlignment="Left" Margin="165,365,0,0" VerticalAlignment="Top" Width="83" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_StartUp_Click"/>
+        <Button x:Name="btn_StartUp" Content="StartUp folder" HorizontalAlignment="Left" Margin="63,364,0,0" VerticalAlignment="Top" Width="83" Background="#FF505459" Foreground="#FFFDFDFD" Height="39" Click="Btn_StartUp_Click"/>
+        <TextBox x:Name="tb_Select" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="45" Margin="257,417,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="128" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="24" IsReadOnly="True" Cursor="Hand" />
+        <TextBlock HorizontalAlignment="Left" Margin="390,424,0,0" TextWrapping="Wrap" Text="=&gt;" VerticalAlignment="Top" Foreground="White" FontSize="24"/>
+        <RadioButton Content="Key" HorizontalAlignment="Left" Margin="430,426,0,0" VerticalAlignment="Top" Foreground="White" IsChecked="True">
+            <RadioButton.LayoutTransform>
+                <ScaleTransform ScaleX="2" ScaleY="2" />
+            </RadioButton.LayoutTransform>
+        </RadioButton>
+        <RadioButton Content="Micro" HorizontalAlignment="Left" Margin="430,475,0,0" VerticalAlignment="Top" Foreground="White">
+            <RadioButton.LayoutTransform>
+                <ScaleTransform ScaleX="2" ScaleY="2" />
+            </RadioButton.LayoutTransform>
+        </RadioButton>
+        <RadioButton Content="File" HorizontalAlignment="Left" Margin="430,528,0,0" VerticalAlignment="Top" Foreground="White">
+            <RadioButton.LayoutTransform>
+                <ScaleTransform ScaleX="2" ScaleY="2" />
+            </RadioButton.LayoutTransform>
+        </RadioButton>
+        <TextBox x:Name="tb_switchKey" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="45" Margin="521,417,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="128" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="24" IsReadOnly="True" Cursor="Hand" PreviewMouseLeftButtonDown="Tb_switchKey_PreviewMouseLeftButtonDown" KeyDown="Tb_switchKey_KeyDown" />
+        <TextBox x:Name="tb_switchMicro" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="45" Margin="548,467,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="211" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="24" IsReadOnly="True" Cursor="Hand" />
+        <TextBox x:Name="tb_switchFile" AllowDrop="True" HorizontalAlignment="Left" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="45" Margin="533,517,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="211" Background="#FF1F2124" BorderBrush="#FF56585B" Foreground="White" FontSize="24" IsReadOnly="True" Cursor="Hand" Drop="Tb_switchFile_Drop" />
+        <Grid HorizontalAlignment="Left" Height="138" Margin="808,401,0,0" VerticalAlignment="Top" Width="192">
+            <Ellipse Fill="#FFE0B847" HorizontalAlignment="Left" Height="64" Margin="30,20,0,0" Stroke="Black" VerticalAlignment="Top" Width="66"/>
+            <Rectangle Fill="#FFE0B847" HorizontalAlignment="Left" Height="42" Margin="101,30,0,0" Stroke="Black" VerticalAlignment="Top" Width="60"/>
+            <TextBlock HorizontalAlignment="Left" Margin="60,98,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+        </Grid>
     </Grid>
 </Window>

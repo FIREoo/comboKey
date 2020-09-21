@@ -20,6 +20,7 @@ using Utilities;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using Color = System.Windows.Media.Color;
 
 namespace Wpf_comboKeyboard
 {
@@ -109,7 +110,7 @@ namespace Wpf_comboKeyboard
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string MyDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-         
+
             keyPath = MyDocumentsPath + "\\KeyFile";
             //check folder         
             if (Directory.Exists(keyPath) == false)
@@ -140,7 +141,11 @@ namespace Wpf_comboKeyboard
         {
             string[] allString = System.IO.File.ReadAllLines(infoFile);
             //取得combo key
-            string str = allString[0].Substring(9, allString[0].Length - 10);//comboKey(CapsLock)
+            string str_combo = allString[0].Substring(9, allString[0].Length - 10);//comboKey(CapsLock)
+            ComboKey = Name2Key[str_combo];
+            gkh.HookedKeys.Add(ComboKey);
+            tb_comboKey.Text = str_combo;
+
             for (int L = 1; L < allString.Count(); L++)
             {
                 string line = allString[L];
@@ -157,8 +162,7 @@ namespace Wpf_comboKeyboard
                 SwitchKeyDic.Add(press_key, switch_key);
                 gkh.HookedKeys.Add(press_key);
             }
-            ComboKey = Name2Key[str];
-            gkh.HookedKeys.Add(ComboKey);
+
         }
         void WriteTxtInfo()
         {
@@ -222,12 +226,18 @@ namespace Wpf_comboKeyboard
         private void keyboardImageClick_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (Grid_LastClick != null)
-                Grid_LastClick.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0, 0, 0, 0));
-            Grid_LastClick = ((Grid)sender);
+                Grid_LastClick.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            if (Grid_LastClick == (Grid)sender)
+            {
+                Grid_LastClick.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+                Grid_LastClick = null;
+                tb_Select.Text = "";
+                return;
+            }
             string Name = ((Grid)sender).Name;
-            // ((Grid)sender).Background = new SolidBrush(Color.FromArgb(30, 30, 120, 210));
-            ((Grid)sender).Background = new ImageBrush(imgKeyMask);
-            Console.WriteLine(Name);
+            ((Grid)sender).Background = new SolidColorBrush(Color.FromArgb(100, 38, 25, 176));
+            // ((Grid)sender).Background = new ImageBrush(imgKeyMask);
+            //Console.WriteLine(Name);
 
             if (waitAComboKey)
             {//set the combo key
@@ -239,7 +249,8 @@ namespace Wpf_comboKeyboard
                 tb_comboKey.Text = Name;
             }
 
-            //   select_002.Margin = ((Grid)sender).Margin;
+            tb_Select.Text = Name;
+            Grid_LastClick = ((Grid)sender);
         }
 
         //gkh Hook
@@ -263,20 +274,23 @@ namespace Wpf_comboKeyboard
                 //Console.WriteLine("combo press");
                 e.Handled = true;
             }
-            else if (e.Key == Key.NumLock)
-            {
-                NumLock = !((((ushort)GetKeyState(0x90)) & 0xffff) != 0);//給個反向，因為先get才換
-                UserNumLock = NumLock;
-            }
             else
             {
                 if (ComboKeyPress == true)
                 {
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
                     //Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
-
-                    keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1);
+                    try
+                    {//numlock不在其中
+                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1);
+                    }
+                    catch { }
                     e.Handled = true;
+                }
+                else if (e.Key == Key.NumLock)
+                {
+                    NumLock = !((((ushort)GetKeyState(0x90)) & 0xffff) != 0);//給個反向，因為先get才換
+                    UserNumLock = NumLock;
                 }
             }
 
@@ -296,21 +310,21 @@ namespace Wpf_comboKeyboard
                 //Console.WriteLine("combo release");
                 e.Handled = true;
             }
-            else if (e.Key == Key.NumLock)
-            {
-                //不知道為什麼在這裡讀會出錯，永遠的false
-                //NumLock = ((((ushort)GetKeyState(0x90)) & 0xffff) != 0);
-            }
             else
             {
                 if (ComboKeyPress == true)
                 {
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
                     //Console.WriteLine(e.Key.ToString() + "_release");
-                    if (SwitchKeyDic[e.Key] == Key.CapsLock)
-                        CapsLockSwitch();
-                    else
-                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 1);
+                    try
+                    {
+                        if (SwitchKeyDic[e.Key] == Key.CapsLock)
+                            CapsLockSwitch();
+                        else
+                            keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 1);
+                    }
+                    catch { } //numlock不在其中
+
                     e.Handled = true;
                 }
             }
@@ -382,7 +396,55 @@ namespace Wpf_comboKeyboard
 
         private void Btn_StartUp_Click(object sender, RoutedEventArgs e)
         {
-            System.Diagnostics.Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.Startup));        
+            System.Diagnostics.Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.Startup));
+        }
+
+        //switch to
+        private void Tb_switchKey_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            tb_switchKey.Text = "-press-";
+        }
+
+        private void Tb_switchKey_KeyDown(object sender, KeyEventArgs e)
+        {
+            tb_switchKey.Text = Key2Name[e.Key];
+        }
+
+        private void Tb_switchFile_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (string folderPath in files)
+                {
+                    DirectoryInfo OpenDirectory = new DirectoryInfo(folderPath);
+                    try
+                    {
+                    var    OpenFiles = OpenDirectory.GetFiles("*.png"); //Getting Text files
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Drop in root Folder! NOT files!");
+                        return;
+                    }
+
+                    string addStr = folderPath.Substring(folderPath.LastIndexOf("\\") + 1);
+                    addStr += "/";
+                   
+                }
+            }
+
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                if (files.Count() > 1)
+                {
+                    MessageBox.Show("one file only");
+                    return;
+                }
+                Console.WriteLine( files[0]);
+            }
         }
     }//main class
     public class ListViewData : INotifyPropertyChanged
