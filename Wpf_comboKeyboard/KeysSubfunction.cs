@@ -556,6 +556,14 @@ namespace Wpf_comboKeyboard
         }
         Dictionary<string, Key> Name2Key = new Dictionary<string, Key>();
         Dictionary<Key, string> Key2Name = new Dictionary<Key, string>();
+        string NameOfKey(string name)
+        {
+            return Key2Name[Name2Key[name]];
+        }
+        string NameOfKey(Key key)
+        {
+            return Key2Name[key];
+        }
         void keyNameIni()
         {
             Name2Key.Add("Esc", Key.Escape); Name2Key.Add("esc", Key.Escape); Name2Key.Add(Key.Escape.ToString(), Key.Escape);
@@ -642,6 +650,9 @@ namespace Wpf_comboKeyboard
             Name2Key.Add( "Down",Key.Down); Name2Key.Add("ArrowDown", Key.Down);
             Name2Key.Add( "Left",Key.Left); Name2Key.Add("ArrowLeft", Key.Left);
             Name2Key.Add( "Right",Key.Right); Name2Key.Add("ArrowRight", Key.Right);
+
+            Name2Key.Add("Micro", Key.F20);
+            Name2Key.Add("File", Key.F21);
 
 
             Key2Name.Add(Key.Escape, "Esc");
@@ -730,6 +741,9 @@ namespace Wpf_comboKeyboard
             Key2Name.Add(Key.Down, "Down");
             Key2Name.Add(Key.Left, "Left");
             Key2Name.Add(Key.Right, "Right");
+
+            Key2Name.Add(Key.F20, "Micro");
+            Key2Name.Add(Key.F21, "File");
         }
 
     }

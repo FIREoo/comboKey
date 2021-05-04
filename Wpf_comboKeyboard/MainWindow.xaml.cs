@@ -20,7 +20,16 @@ using Utilities;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
+using System.Reflection;
 using Color = System.Windows.Media.Color;
+
+[assembly: AssemblyVersion("1.1.2")]
+/*
+ *  v1.1.1
+ *  修改按著 combo key 會連續開關numLock的問題
+ *  v1.1.2
+ *  修改按著 combo key 會偶而切換numLock的問題
+ */
 
 namespace Wpf_comboKeyboard
 {
@@ -36,6 +45,9 @@ namespace Wpf_comboKeyboard
         ObservableCollection<ListViewData> ListViewData_SwitchKey = new ObservableCollection<ListViewData>();
         /// <summary>替換按鍵表 [press key ,switch to]</summary>
         Dictionary<Key, Key> SwitchKeyDic = new Dictionary<Key, Key>();
+        /// <summary>替換按鍵表_用於micro與file [press key ,switch to]</summary>
+        Dictionary<Key, string> SwitchKeyDic_ex = new Dictionary<Key, string>();
+
         /// <summary>The combo key</summary>
         Key ComboKey = Key.CapsLock;
         /// <summary>The combo key press = True</summary>
@@ -54,6 +66,9 @@ namespace Wpf_comboKeyboard
         bool UserNumLock = true;
 
         ImageSource imgKeyMask;
+
+        //UI value
+        bool needSave = false;
 
         public MainWindow()
         {
@@ -152,14 +167,21 @@ namespace Wpf_comboKeyboard
                 if (line == "")
                     continue;
                 bool error1 = Name2Key.TryGetValue(line.Split('\t')[0], out Key press_key);
+                if (error1 == false) { MessageBox.Show("File text error"); return; }
                 bool error2 = Name2Key.TryGetValue(line.Split('\t')[1], out Key switch_key);
-                if (error1 == false || error2 == false)
+                if (error2 == false) { MessageBox.Show("File text error"); return; }
+
+                if (switch_key == Key.F20 || switch_key == Key.F21)
                 {
-                    MessageBox.Show("File text error");
-                    this.Close();
+                    SwitchKeyDic.Add(press_key, switch_key);
                 }
+                else
+                {
+                    SwitchKeyDic.Add(press_key, switch_key);
+                }
+
+
                 ListViewData_SwitchKey.Add(new ListViewData(line.Split('\t')[0], line.Split('\t')[1]));
-                SwitchKeyDic.Add(press_key, switch_key);
                 gkh.HookedKeys.Add(press_key);
             }
 
@@ -225,6 +247,7 @@ namespace Wpf_comboKeyboard
         /// <summary>Keyboard UI image mouse down</summary>
         private void keyboardImageClick_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            tb_switchKey.Text = "";
             if (Grid_LastClick != null)
                 Grid_LastClick.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
             if (Grid_LastClick == (Grid)sender)
@@ -236,8 +259,18 @@ namespace Wpf_comboKeyboard
             }
             string Name = ((Grid)sender).Name;
             ((Grid)sender).Background = new SolidColorBrush(Color.FromArgb(100, 38, 25, 176));
-            // ((Grid)sender).Background = new ImageBrush(imgKeyMask);
-            //Console.WriteLine(Name);
+
+
+            foreach (ListViewData lv in ListViewData_SwitchKey)
+            {
+
+                if (NameOfKey(lv.OrgKey) == Name)
+                {
+                    tb_switchKey.Text = lv.SwiKey;
+                    switchKeyUI(1);
+                    break;
+                }
+            }
 
             if (waitAComboKey)
             {//set the combo key
@@ -253,6 +286,7 @@ namespace Wpf_comboKeyboard
             Grid_LastClick = ((Grid)sender);
         }
 
+
         //gkh Hook
         void gkh_KeyEvent(KeyArgs e)
         {
@@ -265,11 +299,17 @@ namespace Wpf_comboKeyboard
         {
             if (e.Key == ComboKey)
             {
+                if (ComboKeyPress == true)
+                {//如果按下 卻沒有放開 就再一次的進來，代表一直按著，必須排除避免bug
+                    e.Handled = true;
+                    return;
+                }
                 ComboKeyPress = true;
                 if (UserNumLock == true)
-                {
+                {//若使用者原先有NumLock則必須取消，避免key上下左右 變成數字的windows bug
                     keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0, 1);
                     keybd_event(KeyInterop.VirtualKeyFromKey(Key.NumLock), 0, 0x0002, 1);
+                    //會在 KeyUp 後還回
                 }
                 //Console.WriteLine("combo press");
                 e.Handled = true;
@@ -281,7 +321,7 @@ namespace Wpf_comboKeyboard
                     // SwitchKeyDic.TryGetValue();//應該不會有這個問題，因為你要在dic裡面才會被hook                
                     //Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
                     try
-                    {//numlock不在其中
+                    {//numlock不在其中，但是有被hook
                         keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1);
                     }
                     catch { }
@@ -323,7 +363,7 @@ namespace Wpf_comboKeyboard
                         else
                             keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0x0002, 1);
                     }
-                    catch { } //numlock不在其中
+                    catch { } //numlock不在其中，但是有被hook
 
                     e.Handled = true;
                 }
@@ -353,7 +393,7 @@ namespace Wpf_comboKeyboard
 
         }
 
-
+        //test
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             NumLock = (((ushort)GetKeyState(0x90)) & 0xffff) != 0;//給個反向，因為先get才換
@@ -369,22 +409,20 @@ namespace Wpf_comboKeyboard
             //}
 
         }
-
         private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             Console.WriteLine(e.Key.ToString());
         }
-
         private void Img_keyboard_MouseDown(object sender, MouseButtonEventArgs e)
         {
 
         }
 
+        //folder and file
         private void Btn_openFolder_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(keyPath);
         }
-
         private void Btn_reloadFile_Click(object sender, RoutedEventArgs e)
         {
             ListViewData_SwitchKey.Clear();
@@ -393,59 +431,164 @@ namespace Wpf_comboKeyboard
             gkh.HookedKeys.Add(Key.NumLock);
             ReadTxtInfo_andHook();
         }
-
+        private void Btn_saveFile_Click(object sender, RoutedEventArgs e)
+        {
+            StreamWriter streamWriter = new StreamWriter(infoFile, false);
+            streamWriter.WriteLine($"comboKey({Key2Name[ComboKey]})");
+            foreach (ListViewData lv in ListViewData_SwitchKey)
+            {
+                streamWriter.WriteLine($"{ lv.OrgKey}\t{lv.SwiKey}");
+            }
+            streamWriter.Flush();
+            streamWriter.Close();
+        }
         private void Btn_StartUp_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start(Environment.GetFolderPath(Environment.SpecialFolder.Startup));
         }
 
+        /// <summary>switch key的radio button UI (1-key, 2-micro, 3-file)</summary>
+        int nowRadio = 0;
+        void switchKeyUI(int index)
+        {
+            if (rb_switchMicro == null)
+                return;
+            if (rb_switchFile == null)
+                return;
+
+            if (index == 1)
+            {
+                nowRadio = 1;
+                rb_switchKey.IsChecked = true;
+                rb_switchMicro.IsChecked = false;
+                rb_switchFile.IsChecked = false;
+
+                tb_switchKey.Visibility = Visibility.Visible;
+                tb_switchMicro.Visibility = Visibility.Hidden;
+                tb_switchFile.Visibility = Visibility.Hidden;
+            }
+            else if (index == 2)
+            {
+                nowRadio = 2;
+                rb_switchKey.IsChecked = false;
+                rb_switchMicro.IsChecked = true;
+                rb_switchFile.IsChecked = false;
+
+                tb_switchKey.Visibility = Visibility.Hidden;
+                tb_switchMicro.Visibility = Visibility.Visible;
+                tb_switchFile.Visibility = Visibility.Hidden;
+
+            }
+            else if (index == 3)
+            {
+                nowRadio = 3;
+                rb_switchKey.IsChecked = false;
+                rb_switchMicro.IsChecked = false;
+                rb_switchFile.IsChecked = true;
+
+                tb_switchKey.Visibility = Visibility.Hidden;
+                tb_switchMicro.Visibility = Visibility.Hidden;
+                tb_switchFile.Visibility = Visibility.Visible;
+            }
+        }
+        private void rb_switch_switched(object sender, RoutedEventArgs e)
+        {
+            if (rb_switchKey.IsChecked == true)
+            {
+                switchKeyUI(1);
+            }
+            else if (rb_switchMicro.IsChecked == true)
+            {
+                switchKeyUI(2);
+            }
+            else if (rb_switchFile.IsChecked == true)
+            {
+                switchKeyUI(3);
+            }
+        }
         //switch to
+        bool lock_switchKey = false;//true-locked;
         private void Tb_switchKey_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            tb_switchKey.Text = "-press-";
+            lock_switchKey = true;
+            ((TextBox)sender).Text = "--press--";
+            ((TextBox)sender).Foreground = new SolidColorBrush(Color.FromRgb(100, 100, 100));
         }
-
         private void Tb_switchKey_KeyDown(object sender, KeyEventArgs e)
         {
-            tb_switchKey.Text = Key2Name[e.Key];
+            if (lock_switchKey == true)
+            {
+                ((TextBox)sender).Text = Key2Name[e.Key];
+                ((TextBox)sender).Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+                lock_switchKey = false;
+            }
+
         }
 
+        private void Tb_switchFile_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            e.Handled = true;
+        }
         private void Tb_switchFile_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-                foreach (string folderPath in files)
-                {
-                    DirectoryInfo OpenDirectory = new DirectoryInfo(folderPath);
-                    try
-                    {
-                    var    OpenFiles = OpenDirectory.GetFiles("*.png"); //Getting Text files
-                    }
-                    catch
-                    {
-                        MessageBox.Show("Drop in root Folder! NOT files!");
-                        return;
-                    }
-
-                    string addStr = folderPath.Substring(folderPath.LastIndexOf("\\") + 1);
-                    addStr += "/";
-                   
-                }
-            }
-
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Count() > 1)
                 {
-                    MessageBox.Show("one file only");
+                    MessageBox.Show("請勿放多個檔案");
                     return;
                 }
-                Console.WriteLine( files[0]);
+                tb_switchFile.Text = files[0];
+                /* foreach (string folderPath in files)
+                 {
+                     DirectoryInfo OpenDirectory = new DirectoryInfo(folderPath);
+                     try
+                     {
+                         var OpenFiles = OpenDirectory.GetFiles("*.png"); //Getting Text files
+                     }
+                     catch
+                     {
+                         MessageBox.Show("Drop in root Folder! NOT files!");
+                         return;
+                     }
+
+                     string addStr = folderPath.Substring(folderPath.LastIndexOf("\\") + 1);
+                     addStr += "/";
+
+                 }
+             }
+
+             if (e.Data.GetDataPresent(DataFormats.FileDrop))
+             {
+                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                 if (files.Count() > 1)
+                 {
+                     MessageBox.Show("one file only");
+                     return;
+                 }
+                 ((TextBox)sender).Text = files[0];
+                 Console.WriteLine(files[0]);*/
             }
         }
+
+        private void Btn_SetKey_Click(object sender, RoutedEventArgs e)
+        {
+            if (nowRadio == 1)
+            {//key
+             //  ListViewData_SwitchKey.Add(new ListViewData());
+            }
+            else if (nowRadio == 2)
+            {//micro
+
+            }
+            else if (nowRadio == 3)
+            {//file
+
+            }
+        }
+
+
     }//main class
     public class ListViewData : INotifyPropertyChanged
     {
