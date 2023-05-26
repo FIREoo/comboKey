@@ -133,15 +133,11 @@ namespace Wpf_comboKeyboard
 
             //creat info file
             infoFile = keyPath + "\\Combokey.txt";
-            if (File.Exists(infoFile))
-            {
-                ReadTxtInfo_andHook();
-            }
-            else
-            {
+            if (File.Exists(infoFile) == false)
                 WriteTxtInfo();
-                ReadTxtInfo_andHook();
-            }
+
+            ReadTxtInfo_andHook();
+
 
             //啟動時要注意numlock的狀態//應該放在Hook時
             //然後要綁定numlock讓程式永遠知道numlock而不需要每次檢查
@@ -150,6 +146,8 @@ namespace Wpf_comboKeyboard
             UserNumLock = NumLock;
             ScrollLock = (((ushort)GetKeyState(0x91)) & 0xffff) != 0;
             gkh.HookedKeys.Add(Key.NumLock);
+
+            switchKeyUI(1);
         }
         /// <summary>read text and hook</summary>
         void ReadTxtInfo_andHook()
@@ -322,10 +320,10 @@ namespace Wpf_comboKeyboard
                     //Console.WriteLine(e.Key.ToString() + "_press =>" + SwitchKeyDic[e.Key].ToString());
                     try
                     {//numlock不在其中，但是有被hook
-                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1);
+                        keybd_event(KeyInterop.VirtualKeyFromKey(SwitchKeyDic[e.Key]), 0, 0, 1); //press SwitchKeyDic[e.Key] key
                     }
                     catch { }
-                    e.Handled = true;
+                    e.Handled = true;//block original key!
                 }
                 else if (e.Key == Key.NumLock)
                 {
@@ -575,8 +573,8 @@ namespace Wpf_comboKeyboard
         private void Btn_SetKey_Click(object sender, RoutedEventArgs e)
         {
             if (nowRadio == 1)
-            {//key
-             //  ListViewData_SwitchKey.Add(new ListViewData());
+            {//key             
+                ListViewData_SwitchKey.Add(new ListViewData(tb_Select.Text, tb_switchKey.Text));
             }
             else if (nowRadio == 2)
             {//micro
@@ -587,7 +585,6 @@ namespace Wpf_comboKeyboard
 
             }
         }
-
 
     }//main class
     public class ListViewData : INotifyPropertyChanged
